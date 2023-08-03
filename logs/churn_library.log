@@ -1,0 +1,38 @@
+root - INFO - Testing import_data: SUCCESS
+root - INFO - Testing import_data: SUCCESS
+root - INFO - customer_age exists
+root - INFO - maritial_status exists
+root - INFO - toal_trans_ct exists
+root - INFO - heat_map exists
+root - INFO - Testing import_data: SUCCESS
+root - INFO - Churn mapped from Attribute
+root - INFO - Gender has been dropped
+root - INFO - Education_Level has been dropped
+root - INFO - Marital_Status has been dropped
+root - INFO - Income_Category has been dropped
+root - INFO - Card_Category has been dropped
+root - INFO - Gender encoded to float as Gender_Churn
+root - INFO - Education_Level encoded to float as Education_Level_Churn
+root - INFO - Marital_Status encoded to float as Marital_Status_Churn
+root - INFO - Income_Category encoded to float as Income_Category_Churn
+root - INFO - Card_Category encoded to float as Card_Category_Churn
+root - INFO - Testing import_data: SUCCESS
+root - INFO - Churn mapped from Attribute
+root - INFO - Gender has been dropped
+root - INFO - Education_Level has been dropped
+root - INFO - Marital_Status has been dropped
+root - INFO - Income_Category has been dropped
+root - INFO - Card_Category has been dropped
+root - INFO - Gender encoded to float as Gender_Churn
+root - INFO - Education_Level encoded to float as Education_Level_Churn
+root - INFO - Marital_Status encoded to float as Marital_Status_Churn
+root - INFO - Income_Category encoded to float as Income_Category_Churn
+root - INFO - Card_Category encoded to float as Card_Category_Churn
+root - INFO - X_train engineered with 10127 rows
+root - INFO - X_train engineered with 20 columns
+root - INFO - X_test engineered with 10127 rows
+root - INFO - X_test engineered with 20 columns
+root - INFO - y_train engineered with 10127 rows
+root - INFO - y_train engineered with 20 columns
+root - INFO - y_test engineered with 10127 rows
+root - INFO - y_test engineered with 20 columns
