@@ -7,6 +7,8 @@ In this project, you will implement your learnings to identify credit card custo
 
 ## Files and data description
 
+Files
+
 - churn_library.py - contains functions to find customers who are likely to churn
 - churn_notebook.ipynb - notebook that needs to be refactored
 - churn_script_logging_and_tests.py - unit tests for churn_library.py
