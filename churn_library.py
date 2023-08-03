@@ -21,6 +21,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 
 from sklearn.metrics import classification_report
+from sklearn.metrics import plot_roc_curve
 os.environ['QT_QPA_PLATFORM']='offscreen'
 
 cat_columns = [
@@ -57,21 +58,25 @@ def perform_eda(dataframe):
     plt.figure(figsize=(20,10))
     dataframe['Customer_Age'].hist()
     plt.savefig("./images/eda/customer_age.png")
+    plt.close()
 
     #create maritial status plot
     plt.figure(figsize=(20,10))
     dataframe.Marital_Status.value_counts('normalize').plot(kind='bar')
     plt.savefig("./images/eda/maritial_status.png")
+    plt.close()
 
     #create plot to show distributions of 'Total_Trans_Ct'
     #and add a smooth curve obtained using a kernel density estimate
     plt.figure(figsize=(20,10))
     sns.histplot(dataframe['Total_Trans_Ct'], stat='density', kde=True)
     plt.savefig("./images/eda/toal_trans_ct.png")
+    plt.close()
 
     plt.figure(figsize=(20,10))
     sns.heatmap(dataframe.corr(), annot=False, cmap='Dark2_r', linewidths = 2)
     plt.savefig("./images/eda/heat_map.png")
+    plt.close()
 
 
 def encoder_helper(dataframe, category_list):
@@ -164,6 +169,7 @@ def classification_report_image(y_train,
              {'fontsize': 10}, fontproperties = 'monospace')
     plt.axis('off')
     plt.savefig("./images/results/rf_report.png")
+    plt.close()
 
     # create and save Logistic Regression classification report
     plt.rc('figure', figsize=(5, 5))
@@ -177,6 +183,7 @@ def classification_report_image(y_train,
              {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
     plt.axis('off')
     plt.savefig("./images/results/lr_report.png")
+    plt.close()
 
 def feature_importance_plot(model, X_data, output_pth):
     '''
@@ -189,6 +196,7 @@ def feature_importance_plot(model, X_data, output_pth):
     output:
              None
     '''
+    X_data.drop('Churn', axis=1, inplace=True)
     importances = model.feature_importances_
     # Sort feature importances in descending order
     indices = np.argsort(importances)[::-1]
@@ -206,6 +214,7 @@ def feature_importance_plot(model, X_data, output_pth):
     # Add feature names as x-axis labels
     plt.xticks(range(X_data.shape[1]), names, rotation=90)
     plt.savefig(output_pth+"/feature_importance.png")
+    plt.close()
 
 def train_models(X_train, X_test, y_train, y_test):
     '''
@@ -254,6 +263,7 @@ def train_models(X_train, X_test, y_train, y_test):
              {'fontsize': 10}, fontproperties = 'monospace')
     plt.axis('off')
     plt.savefig("./images/results/rf__train_report.png")
+    plt.close()
 
     # create and save Logistic Regression classification report
     plt.rc('figure', figsize=(5, 5))
@@ -267,32 +277,43 @@ def train_models(X_train, X_test, y_train, y_test):
              {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
     plt.axis('off')
     plt.savefig("./images/results/lr_train_report.png")
+    plt.close()
 
     #save models
     joblib.dump(cv_rfc.best_estimator_, './models/rfc_model.pkl')
     joblib.dump(lrc, './models/logistic_model.pkl')
     
+    lrc_plot = plot_roc_curve(lrc, X_test, y_test)
+    plt.figure(figsize=(15, 8))
+    ax = plt.gca()
+    rfc_disp = plot_roc_curve(cv_rfc.best_estimator_, X_test, y_test, ax=ax, alpha=0.8)
+    lrc_plot.plot(ax=ax, alpha=0.8)
+    plt.savefig("./images/results/roc.png")
+    plt.close()
+    
     return y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf
     
 
 if __name__ == "__main__":
-    dataframe = import_data("./data/bank_data.csv")
-    perform_eda(dataframe)
-    cat_columns = [
-    'Gender',
-    'Education_Level',
-    'Marital_Status',
-    'Income_Category',
-    'Card_Category'                
-]
-    dataframe = encoder_helper(dataframe, cat_columns)
-    X_train, X_test, y_train, y_test = perform_feature_engineering(dataframe)
+#     dataframe = import_data("./data/bank_data.csv")
+#     perform_eda(dataframe)
+#     cat_columns = [
+#     'Gender',
+#     'Education_Level',
+#     'Marital_Status',
+#     'Income_Category',
+#     'Card_Category'                
+# ]
+#     dataframe = encoder_helper(dataframe, cat_columns)
+#     X_train, X_test, y_train, y_test = perform_feature_engineering(dataframe)
     
-    y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf = train_models(X_train, X_test, y_train, y_test)
+#     y_train_preds_lr, y_train_preds_rf, y_test_preds_lr, y_test_preds_rf = train_models(X_train, X_test, y_train, y_test)
     
-    classification_report_image(y_train,
-                                y_test,
-                                y_train_preds_lr,
-                                y_train_preds_rf,
-                                y_test_preds_lr,
-                                y_test_preds_rf)
+#     classification_report_image(y_train,
+#                                 y_test,
+#                                 y_train_preds_lr,
+#                                 y_train_preds_rf,
+#                                 y_test_preds_lr,
+#                                 y_test_preds_rf)
+    
+    feature_importance_plot(joblib.load('./models/rfc_model.pkl'), encoder_helper(import_data("./data/bank_data.csv"), ['Gender','Education_Level','Marital_Status','Income_Category','Card_Category']), "./images/results/")

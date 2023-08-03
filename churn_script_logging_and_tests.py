@@ -37,16 +37,16 @@ def test_import(import_data):
     '''
     try:
         dataframe = cl.import_data("./data/bank_data.csv")
-        logging.info("Testing import_data: SUCCESS")
+        logging.info("SUCCESS: Testing import_data: SUCCESS")
     except FileNotFoundError as err:
-        logging.error("Testing import_eda: The file wasn't found")
+        logging.error("ERROR: Testing import_eda: The file wasn't found")
         raise err
 
     try:
         assert dataframe.shape[0] > 0
         assert dataframe.shape[1] > 0
     except AssertionError as err:
-        logging.error("Testing import_data: The file doesn't appear to have rows and columns")
+        logging.error("ERROR: Testing import_data: The file doesn't appear to have rows and columns")
         raise err
 
     pytest.dataframe = dataframe
@@ -61,9 +61,9 @@ def test_eda(perform_eda):
     for graph in graphs:
         try:
             assert os.path.isfile("./images/eda/"+graph+".png")
-            logging.info("%s exists", graph)
+            logging.info("SUCCESS: %s exists", graph)
         except AssertionError:
-            logging.error("%s Does not exist", graph)
+            logging.error("ERROR: %s Does not exist", graph)
 
 def test_encoder_helper(encoder_helper):
     '''
@@ -79,26 +79,26 @@ def test_encoder_helper(encoder_helper):
     dataframe = cl.encoder_helper(dataframe, cat_columns)
     try:
         assert dataframe['Churn'].dtype == 'int64'
-        logging.info("Churn mapped from Attribute")
+        logging.info("SUCCESS: Churn mapped from Attribute")
     except KeyError:
-        logging.error("Churn column does not exit")
+        logging.error("ERROR: Churn column does not exit")
     except AssertionError:
-        logging.error("Churn column datatype is not int64")
+        logging.error("ERROR: Churn column datatype is not int64")
 
     for column in cat_columns:
         try:
             assert column not in dataframe.columns
-            logging.info("%s has been dropped", column)
+            logging.info("SUCCESS: %s has been dropped", column)
         except AssertionError:
-            logging.error("%s has not been dropped", column)
+            logging.error("ERROR: %s has not been dropped", column)
 
     for column in cat_columns:
         try:
             encoded_column = column+"_Churn"
             assert dataframe[encoded_column].dtype == 'float'
-            logging.info("%s encoded to float as %s", column, encoded_column)
+            logging.info("SUCESS %s encoded to float as %s", column, encoded_column)
         except AssertionError:
-            logging.info("%s has not been encoded to float as %s", column, encoded_column)
+            logging.info("ERROR: %s has not been encoded to float as %s", column, encoded_column)
 
     pytest.dataframe = dataframe
 
@@ -120,15 +120,15 @@ def test_perform_feature_engineering(perform_feature_engineering):
             for j, dim in enumerate(dataframe.shape):
                 assert dataframe.shape[j] > 0
                 if j==0:
-                    logging.info("%s engineered with %d rows", df_names[i], dataframe.shape[j])
+                    logging.info("SUCCESS: %s engineered with %d rows", df_names[i], dataframe.shape[j])
                     #logging.info(df_names[i]+" engineered with "+str(dataframe.shape[j])+" rows")
                 else:
-                    logging.info("%s engineered with %d columns",
+                    logging.info("SUCESS: %s engineered with %d columns",
                                  df_names[i], dataframe.shape[j])
                     #logging.info(df_names[i]+" 
                     #engineered with "+str(dataframe.shape[j])+" columns")
         except  AssertionError:
-            logging.error("%s was not engineered correctly", df_names[i])
+            logging.error("ERROR: %s was not engineered correctly", df_names[i])
 
     pytest.X_train = X_train
     pytest.X_test = X_test
@@ -143,20 +143,25 @@ def test_train_models(train_models):
     X_test = pytest.X_test
     y_train = pytest.y_train
     y_test = pytest.y_test
-    print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
-
+    
     cl.train_models(X_train, X_test, y_train, y_test)
     try:
         assert os.path.isfile('./models/rfc_model.pkl')
-        logging.info("Random forest model has been trained and saved")
+        logging.info("SUCCESS: Random forest model has been trained and saved")
     except AssertionError:
         logging.error("ERROR: random forest model does not exist on the file system")
 
     try:
         assert os.path.isfile('./models/logistic_model.pkl')
-        logging.info("Logistic regression model has been trained and saved")
+        logging.info("SUCESS: Logistic regression model has been trained and saved")
     except AssertionError:
         logging.error("ERROR: Logistic regression does not exist on the file system")
+        
+    try:
+        assert os.path.isfile('./images/results/roc.png')
+        logging.info("SUCEESS: ROC plots saved")
+    except AssertionError:
+        logging.error("ERROR: ROC plots are not saved")
 
 if __name__ == "__main__":
     test_import("./data/bank_data.csv")
@@ -165,7 +170,7 @@ if __name__ == "__main__":
     test_perform_feature_engineering(
          test_encoder_helper(
          test_import("./data/bank_data.csv")))
-#    test_train_models(
-#         test_perform_feature_engineering(
-#         test_encoder_helper(
-#         test_import("./data/bank_data.csv"))))
+    test_train_models(
+        test_perform_feature_engineering(
+        test_encoder_helper(
+        test_import("./data/bank_data.csv"))))
